@@ -1,0 +1,12 @@
+@import url("https://fonts.googleapis.com/css2?family=Mukta&display=swap");
+
+* {
+  margin: 0;
+  color: aliceblue;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  background-color: #040200;
+}
