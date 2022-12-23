@@ -39,9 +39,10 @@ const Login = () => {
       try {
         if (values.email && values.password) {
           let loginData = await axios.post(`${env.api}/users/login`, values);
+          let stringy = JSON.stringify(loginData.data.result);
           if (loginData.status) {
             window.localStorage.setItem("app-token", loginData.data.token);
-            window.localStorage.setItem("User", loginData.data.result.name);
+            window.localStorage.setItem("User", stringy);
             alert("signed in successfully");
             navigate("/chats");
           }

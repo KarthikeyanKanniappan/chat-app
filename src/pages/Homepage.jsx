@@ -9,11 +9,13 @@ import {
   TabPanels,
   TabList,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Login from "../components/Login";
 import SignUp from "../components/SignUp";
-
+import UserContext from "../UserContext.js";
 const Homepage = () => {
+  let context = useContext(UserContext);
+
   return (
     <Container maxW="xl" centerContent>
       <Box
