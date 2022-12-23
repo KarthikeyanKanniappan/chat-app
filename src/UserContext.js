@@ -4,12 +4,15 @@ import { createContext } from "react";
 let UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState();
+  const [selectChat, setSelectedChat] = useState();
+  const [chats, setChats] = useState([]);
   return (
     <UserContext.Provider
       value={{
-        user,
-        setUser,
+        selectChat,
+        setSelectedChat,
+        chats,
+        setChats,
       }}
     >
       {children}

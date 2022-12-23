@@ -13,6 +13,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Spinner,
   Text,
   Tooltip,
   useDisclosure,
@@ -24,16 +25,22 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import UserContext from "../UserContext.js";
 import ProfileModal from "./ProfileModal.jsx";
+import axios from "axios";
+import { env } from "../config.js";
+import ChatLoading from "./ChatLoading.jsx";
+import UserListItem from "./UserListItem.jsx";
 
 const SideDrawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   let context = useContext(UserContext);
+  const { selectChat, setSelectedChat, chats, setChats } = context;
   const navigate = useNavigate();
   const [user, setUser] = useState("");
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState();
+
   useEffect(() => {
     let newer = window.localStorage.getItem("User");
     let newUser = JSON.parse(newer);
@@ -46,7 +53,48 @@ const SideDrawer = () => {
     navigate("/");
   };
 
-  const handleSearch = () => {};
+  const handleSearch = async () => {
+    if (!search) {
+      alert("Please enter a search term");
+    }
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("app-token")} `,
+        },
+      };
+
+      const { data } = await axios.get(
+        `${env.api}/users/allUsers?search=${search}`,
+        config
+      );
+      setLoading(false);
+      setSearchResult(data);
+    } catch (err) {
+      alert(err);
+    }
+  };
+
+  const accessChat = async (userId) => {
+    try {
+      setLoadingChat(true);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("app-token")} `,
+        },
+      };
+      const { data } = await axios.post(`${env.api}/chat`, { userId }, config);
+      if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
+      setSelectedChat(data);
+      setLoadingChat(false);
+      onClose();
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   return (
     <>
       <Box
@@ -109,6 +157,18 @@ const SideDrawer = () => {
               />
               <Button onClick={handleSearch}>Go</Button>
             </Box>
+            {loading ? (
+              <ChatLoading />
+            ) : (
+              searchResult?.map((user) => (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => accessChat(user._id)}
+                />
+              ))
+            )}
+            {loadingChat && <Spinner ml="auto" display="flex" />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
