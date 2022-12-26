@@ -7,7 +7,8 @@ import AddIcon from "@mui/icons-material/Add";
 import ChatLoading from "./ChatLoading.jsx";
 import { getSender } from "./ChatLogic.js";
 import GroupChatModal from "./GroupChatModal.jsx";
-const MyChats = ({ user }) => {
+
+const MyChats = ({ user, fetchAgain }) => {
   let context = useContext(UserContext);
   const [loggedUser, setLoggedUser] = useState();
   const { selectChat, setSelectedChat, chats, setChats } = context;
@@ -29,7 +30,7 @@ const MyChats = ({ user }) => {
   useEffect(() => {
     setLoggedUser(user);
     fetchChats();
-  }, []);
+  }, [fetchAgain]);
 
   return (
     <Box

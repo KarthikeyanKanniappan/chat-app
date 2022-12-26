@@ -6,6 +6,7 @@ import SideDrawer from "../components/SideDrawer";
 
 const ChatPage = () => {
   const [user, setUser] = useState("");
+  const [fetchAgain, setFetchAgain] = useState(false);
   useEffect(() => {
     let newer = window.localStorage.getItem("User");
     let newUser = JSON.parse(newer);
@@ -21,8 +22,14 @@ const ChatPage = () => {
         h="91.5vh"
         p="10px"
       >
-        {user && <MyChats user={user} />}
-        {user && <ChatBox />}
+        {user && <MyChats fetchAgain={fetchAgain} user={user} />}
+        {user && (
+          <ChatBox
+            fetchAgain={fetchAgain}
+            setFetchAgain={setFetchAgain}
+            user={user}
+          />
+        )}
       </Box>
     </div>
   );
