@@ -28,7 +28,7 @@ const GroupChatModal = ({ children }) => {
   const [loading, setLoading] = useState(false);
   let context = useContext(UserContext);
 
-  const { chats, setChats } = context;
+  const { chats, setChats, setSelectedChat } = context;
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -75,10 +75,11 @@ const GroupChatModal = ({ children }) => {
         config
       );
       setChats([data, ...chats]);
+
       onClose();
       alert("New Group Chat Created");
     } catch (err) {
-      alert("Failed to create the Chat");
+      alert(err.response.data);
     }
   };
 

@@ -54,7 +54,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
             w="100%"
             h="100%"
             borderRadius="lg"
-            overFlowY="hidden"
+            overflowY="hidden"
           ></Box>
         </>
       ) : (

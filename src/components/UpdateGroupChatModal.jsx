@@ -11,12 +11,16 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   useDisclosure,
 } from "@chakra-ui/react";
 import React, { useState, useContext } from "react";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import UserContext from "../UserContext.js";
 import UserBadgeItem from "./UserBadgeItem.jsx";
+import axios from "axios";
+import { env } from "../config.js";
+import UserListItem from "./UserListItem.jsx";
 
 const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -27,14 +31,65 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
   const [renameLoading, setRenameLoading] = useState(false);
 
   let context = useContext(UserContext);
-  const { selectChat, setSelectedChat } = context;
+  const { selectChat, setSelectedChat, chats } = context;
 
   const handleRemove = (delUser) => {
     // setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
   };
 
-  const handleRename = () => {};
-  const handleSearch = () => {};
+  const handleRename = async () => {
+    if (!groupChatName) return;
+    try {
+      setRenameLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("app-token")} `,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${env.api}/chat/rename`,
+        {
+          chatId: selectChat._id,
+          chatName: groupChatName,
+        },
+        config
+      );
+      setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setRenameLoading(false);
+    } catch (err) {
+      alert("Error Occured!");
+      setRenameLoading(false);
+    }
+    setGroupChatName("");
+  };
+
+  const handleSearch = async (query) => {
+    if (!query) {
+      return;
+    }
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("app-token")}`,
+        },
+      };
+
+      const { data } = await axios.get(
+        `${env.api}/users/allUsers?search=${query}`,
+        config
+      );
+      setLoading(false);
+      setSearchResult(data);
+    } catch (err) {
+      alert("Failed top Load the Search Results");
+      setLoading(false);
+    }
+  };
+
+  const handleAddUser = () => {};
 
   return (
     <>
@@ -57,7 +112,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box>
+            <Box w="100%" display="flex" flexWrap="wrap" pb={3}>
               {selectChat.users.map((u) => (
                 <UserBadgeItem
                   key={u._id}
@@ -90,6 +145,17 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
+            {loading ? (
+              <Spinner size="lg" />
+            ) : (
+              searchResult?.map((user) => (
+                <UserListItem
+                  key={user._id}
+                  user={user}
+                  handleFunction={() => handleAddUser(user)}
+                />
+              ))
+            )}
           </ModalBody>
           <ModalFooter>
             <Button mr={3} onClick={() => handleRemove(user)} colorScheme="red">
