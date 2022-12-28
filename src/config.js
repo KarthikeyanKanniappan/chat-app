@@ -1,5 +1,5 @@
 export const env = {
-  api: "http://localhost:5000",
+  api: "https://chat-app-server-phi.vercel.app",
 };
 
 // http://localhost:5000

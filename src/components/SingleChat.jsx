@@ -15,12 +15,17 @@ import { getSender, getSenderFull } from "./ChatLogic.js";
 import ProfileModal from "./ProfileModal.jsx";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat.jsx";
+import io from "socket.io-client";
 
+const ENDPOINT = "https://chat-app-server-phi.vercel.app";
+// http://localhost:5000
+// https://chat-app-server-phi.vercel.app
+var socket, selectedChatCompare;
 const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
-
+  const [socketConnected, setSocketConnected] = useState(false);
   let context = useContext(UserContext);
   const { selectChat, setSelectedChat } = context;
 
@@ -41,14 +46,34 @@ const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
 
       setMessages(data);
       setLoading(false);
+      socket.emit("join chat", selectChat._id);
     } catch (err) {
       alert("Failed to load");
     }
   };
 
   useEffect(() => {
+    socket = io(ENDPOINT);
+    socket.emit("setup", user);
+    socket.on("connection", () => setSocketConnected(true));
+  }, []);
+
+  useEffect(() => {
     fetchMessages();
+    selectedChatCompare = selectChat;
   }, [selectChat]);
+
+  useEffect(() => {
+    socket.on("message received", (newMessageReceived) => {
+      if (
+        !selectedChatCompare ||
+        selectedChatCompare._id !== newMessageReceived.chat._id
+      ) {
+      } else {
+        setMessages([...messages, newMessageReceived]);
+      }
+    });
+  });
 
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
@@ -69,6 +94,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
           config
         );
         console.log(data);
+        socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (err) {}
     }
