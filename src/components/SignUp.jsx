@@ -59,6 +59,7 @@ const SignUp = () => {
             if (loginData.status) {
               alert("User Created");
             }
+            navigate("/chat");
           }
         } catch (err) {
           alert(err.response.data.message);

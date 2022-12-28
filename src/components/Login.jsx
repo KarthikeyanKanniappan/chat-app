@@ -101,9 +101,6 @@ const Login = () => {
         >
           Sign In
         </Button>
-        <Button colorScheme="red" width="100%" style={{ marginTop: 15 }}>
-          Guest Credentials
-        </Button>
       </VStack>
     </form>
   );
