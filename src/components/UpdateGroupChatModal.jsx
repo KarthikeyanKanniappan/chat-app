@@ -22,7 +22,12 @@ import axios from "axios";
 import { env } from "../config.js";
 import UserListItem from "./UserListItem.jsx";
 
-const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
+const UpdateGroupChatModal = ({
+  fetchAgain,
+  setFetchAgain,
+  user,
+  fetchMessages,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [groupChatName, setGroupChatName] = useState();
   const [search, setSearch] = useState("");
@@ -33,8 +38,35 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
   let context = useContext(UserContext);
   const { selectChat, setSelectedChat, chats } = context;
 
-  const handleRemove = (delUser) => {
-    // setSelectedUsers(selectedUsers.filter((sel) => sel._id !== delUser._id));
+  const handleRemove = async (user1) => {
+    if (selectChat.groupAdmin._id !== user._id && user1._id !== user._id) {
+      alert("only admins can remove someone!");
+    }
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("app-token")} `,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${env.api}/chat/groupRemove`,
+        {
+          chatId: selectChat._id,
+          userId: user1._id,
+        },
+        config
+      );
+
+      user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      fetchMessages();
+      setLoading(false);
+    } catch (err) {
+      alert("Error Occurred !");
+      setLoading(false);
+    }
   };
 
   const handleRename = async () => {
@@ -89,7 +121,37 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain, user }) => {
     }
   };
 
-  const handleAddUser = () => {};
+  const handleAddUser = async (user1) => {
+    if (selectChat.users.find((u) => u._id === user1._id)) {
+      alert("User Already in group!");
+    }
+    if (selectChat.groupAdmin._id !== user._id) {
+      alert("Only admins can add someone !");
+    }
+    try {
+      setLoading(true);
+      const config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("app-token")} `,
+        },
+      };
+
+      const { data } = await axios.put(
+        `${env.api}/chat/groupAdd`,
+        {
+          chatId: selectChat._id,
+          userId: user1._id,
+        },
+        config
+      );
+      setSelectedChat(data);
+      setFetchAgain(!fetchAgain);
+      setLoading(false);
+    } catch (err) {
+      alert("Error Occurred !");
+      setLoading(false);
+    }
+  };
 
   return (
     <>

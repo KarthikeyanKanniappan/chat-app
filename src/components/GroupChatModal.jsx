@@ -12,8 +12,8 @@ import {
   ModalOverlay,
   useDisclosure,
 } from "@chakra-ui/react";
-import axios from "axios";
 import React, { useState, useContext } from "react";
+import axios from "axios";
 import { env } from "../config.js";
 import UserListItem from "./UserListItem";
 import UserBadgeItem from "./UserBadgeItem.jsx";
