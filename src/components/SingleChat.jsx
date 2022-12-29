@@ -21,6 +21,7 @@ const ENDPOINT = "https://chat-app-server-phi.vercel.app";
 // http://localhost:5000
 // https://chat-app-server-phi.vercel.app
 var socket, selectedChatCompare;
+
 const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -55,7 +56,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
   useEffect(() => {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
-    socket.on("connection", () => setSocketConnected(true));
+    socket.on("connected", () => setSocketConnected(true));
   }, []);
 
   useEffect(() => {
