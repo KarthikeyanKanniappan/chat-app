@@ -1,5 +1,5 @@
 export const env = {
-  api: "https://chat-app-server-phi.vercel.app",
+  api: "https://my-pager.onrender.com",
 };
 
 // http://localhost:5000

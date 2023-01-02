@@ -48,7 +48,7 @@ const SignUp = () => {
       return errors;
     },
 
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       if (values.email && values.password) {
         try {
           if (values.email && values.password) {
@@ -56,11 +56,15 @@ const SignUp = () => {
               `${env.api}/users/register`,
               values
             );
+            let stringy = JSON.stringify(loginData.data.result);
             if (loginData.status) {
               alert("User Created");
+              window.localStorage.setItem("app-token", loginData.data.token);
+              window.localStorage.setItem("User", stringy);
+              navigate("/chats");
             }
-            navigate("/chat");
           }
+          resetForm();
         } catch (err) {
           alert(err.response.data.message);
         }

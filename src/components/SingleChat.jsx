@@ -17,8 +17,8 @@ import axios from "axios";
 import ScrollableChat from "./ScrollableChat.jsx";
 import io from "socket.io-client";
 
-const ENDPOINT = "https://chat-app-server-phi.vercel.app";
-// http://localhost:5000
+const ENDPOINT = "https://my-pager.onrender.com";
+//
 // https://chat-app-server-phi.vercel.app
 var socket, selectedChatCompare;
 
@@ -94,7 +94,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain, user }) => {
           },
           config
         );
-        console.log(data);
         socket.emit("new message", data);
         setMessages([...messages, data]);
       } catch (err) {}
